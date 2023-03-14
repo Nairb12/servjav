@@ -56,30 +56,4 @@ public class EchoServer {
             System.out.println("Error" + ex);
         }
     }
-    
-    public String[] conectS() {
-       
-        try {
-            ServerSocket serverSocket = new ServerSocket(1234);
-            Socket clientSocket = serverSocket.accept();
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            String inputLine = in.readLine();
-            System.out.println("Servidor");
-            System.out.println("Recibiendo: " + inputLine);
-            String outputLine = inputLine.toUpperCase();
-            System.out.println("Enviando: " + outputLine);
-            out.println(outputLine);
-            
-            out.close();
-            in.close();
-            clientSocket.close();
-            
-            String datos[] = {inputLine, outputLine};
-            System.out.println(inputLine);
-            return datos;
-        } catch (IOException ex) {
-            return new String[0];
-        }
-    }
 }
