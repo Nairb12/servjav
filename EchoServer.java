@@ -1,29 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author lambda
- */
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.time.LocalDate;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 public class EchoServer {
-    private static Connection cn;
-   
+    static Connection cn = null;
+
     public static void main(String[] args) {
         activarServer();
     }
+
     public static void activarServer () {
+        System.out.println("Server iniciado");
         try {
             ServerSocket serverSocket = new ServerSocket(1234);
             Socket clientSocket = serverSocket.accept();
@@ -32,15 +24,22 @@ public class EchoServer {
             String inputLine = in.readLine();
             System.out.println("Servidor");
             System.out.println("Recibiendo: " + inputLine);
-            String outputLine = "";
-       
+            String[] partes = inputLine.split(",");
+            String msj = partes[0];
+        
             Class.forName("org.mariadb.jdbc.Driver");
             cn = DriverManager.getConnection("jdbc:mariadb://192.168.0.12/servidor", "alumnosjava", "uiop098765");
-            PreparedStatement mssj = cn.prepareStatement("INSERT INTO mensaje (msj) VALUES (?)");
-            mssj.setString(1, x);
-            mssj.executeUpdate();
-            cn.close();
+            PreparedStatement prStmt = cn.prepareStatement("INSERT INTO mensaje (msj) VALUES (?)");
+            prStmt.setString(1, msj);
             
+            prStmt.executeUpdate();
+            cn.close();
+
+            String outputLine = "";
+            if (!inputLine.equalsIgnoreCase("salir")) {
+                outputLine = String.valueOf(inputLine);
+            }
+
             System.out.println("Enviando: " + outputLine);
             out.println(outputLine);
             out.close();
@@ -51,9 +50,8 @@ public class EchoServer {
             if (!inputLine.equalsIgnoreCase("salir")) {
                 activarServer();
             }
-         
-        } catch (IOException ex) {
-            System.out.println("Error" + ex);
+        } catch (Exception ex) {
+            System.out.println("Error"+ex.toString());
         }
     }
 }
